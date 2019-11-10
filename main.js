@@ -89,12 +89,8 @@ Vue.component('character-row', {
     styles: function () {
       return {
         root: `
-          display: inline-block;
           background: ${this.selected ? 'blue' : 'lightgray'};
           color: ${this.selected ? 'white' : 'inherit'};
-          padding: 1rem;
-          margin: .5rem;
-          border-radius: 10px;
         `
       }
     },
@@ -103,7 +99,7 @@ Vue.component('character-row', {
     },
   },
   template: `
-    <div v-bind:style="styles().root" v-on:click="onClick">
+    <div v-bind:style="styles().root" v-on:click="onClick" class="character-row">
       {{ character }}
     </div>
   `,
@@ -133,6 +129,17 @@ const app = new Vue({
           flex: 1;
           overflow-y: scroll;
         `,
+        characterButtons: `
+          display: flex;
+          max-width: 25rem;
+          margin: 0 auto;
+          width: 100%;
+        `,
+        characterButton: `
+          font-size: 1rem;
+          flex: 1;
+          margin: 0 1rem;
+        `,
         randomCharacterContainer: `
           flex: 1;
         `,
@@ -141,12 +148,8 @@ const app = new Vue({
           color: ${this.randomCharacter === placeholderText ? 'lightgray' : 'inherit' };
         `,
         randomCharacterButton: `
-          padding: .5rem;
-          border: none;
+          flex: 1;
           font-size: 1.5rem;
-          border-radius: 10px;
-          color: white;
-          background: gray;
         `,
         buttonContainer: `
           margin-top: 1rem;
@@ -168,10 +171,26 @@ const app = new Vue({
     chooseRandomCharacter: function () {
       this.randomCharacter = this.selectedCharacters[Math.floor(Math.random() * this.selectedCharacters.length)];
     },
+    selectAll: function () {
+      this.selectedCharacters = this.characters
+      localStorage.setItem('selected_characters', JSON.stringify(this.characters))
+    },
+    clearAll: function () {
+      this.selectedCharacters = []
+      localStorage.setItem('selected_characters', JSON.stringify([]))
+    },
   },
   template: `
     <div v-bind:style="styles().root">
       <h1>Character List</h1>
+      <div v-bind:style="styles().characterButtons">
+        <button v-bind:style="styles().characterButton" v-on:click="selectAll">
+          Select All
+        </button>
+        <button v-bind:style="styles().characterButton" v-on:click="clearAll">
+          Clear All
+        </button>
+      </div>
       <div v-bind:style="styles().characterList">
         <character-row
           v-for="c in characters"
